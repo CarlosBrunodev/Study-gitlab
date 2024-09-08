@@ -1,0 +1,39 @@
+image: node:15.12-alpine3.13
+
+stages:
+  - test
+  - deploy
+
+.yarn_start: &yarn
+  script:
+  - cd website
+  - yarn install
+  - yarn build
+
+test:
+  <<: *yarn
+  stage: test
+  except:
+    - master
+  trigger:
+    include:
+      - project: 'carlosbruno.dev/carlosbruno.dev.gitlab.com'
+        ref: 'master'
+        file: '/templates/echo.gitlab-ci.yml'
+
+pages:
+  <<: *yarn
+  stage: deploy
+  script:
+  - mv ./build ../public
+  - printenv $CI_PIPELINE_IID
+  artifacts:
+    paths:
+    - public
+  only:
+    - master
+  trigger:
+    include:
+      - project: 'carlosbruno.dev/carlosbruno.dev.gitlab.com'
+        ref: 'master'
+        file: '/templates/echo.gitlab-ci.yml'

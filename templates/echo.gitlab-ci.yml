@@ -1,0 +1,9 @@
+image: node:15.12-alpine3.13
+
+stages:
+  - echo
+
+test:
+  stage: echo
+  script:
+  - echo "Validando pipeline filha"
